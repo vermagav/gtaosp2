@@ -1,4 +1,4 @@
-gtaosp2
-=======
+CS 6210: Advanced Operating Systems
+===================================
 
-GT AOS P2
+Project 2: Barrier Synchronization
