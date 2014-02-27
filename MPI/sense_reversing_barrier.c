@@ -5,8 +5,9 @@
 #define DUMMY_TAG 1
 
 void sense_reversing_barrier_MPI(int *rank, int *numprocs, int *sense){
-	
 	int message = 1, i;
+	for (i=0;i<20000;i++);
+	
 	int root = *(numprocs)-1;
 	int local_sense = *sense;
 	
@@ -17,16 +18,18 @@ void sense_reversing_barrier_MPI(int *rank, int *numprocs, int *sense){
 	else { // If last process, then blocking-receive messages from all other processes
 
 		for(i=0 ; i<root; i++) {
-			MPI_Recv(&message, DUMMY_SIZE, MPI_INT, i, DUMMY_TAG, MPI_COMM_WORLD, NULL);
+			MPI_Recv(&message, DUMMY_SIZE, MPI_INT, i, DUMMY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 
 		// Flip sense and broadcast it
 		*sense = !*sense;
-		MPI_Bcast(sense, DUMMY_SIZE, MPI_INT, root, MPI_COMM_WORLD);
+		
 	}
+	MPI_Bcast(sense, DUMMY_SIZE, MPI_INT, root, MPI_COMM_WORLD);
 
 	// Spin on sense reversal for all processes
 	while (local_sense == *sense);
+	for (i=0;i<20000;i++);
 }
 
 int main(int argc, char **argv)
@@ -39,16 +42,15 @@ int main(int argc, char **argv)
   	MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
 
   	fprintf(stderr, "Before barrier 1 : Process %d of %d\n", my_id+1, num_processes);
-	fflush(stderr);
+	//fflush(stderr);
 	sense_reversing_barrier_MPI(&my_id, &num_processes, &sense);
-	fflush(stderr);
+	//fflush(stderr);
   	fprintf(stderr, "Before Barrier 2 : Process %d of %d\n", my_id+1, num_processes);
-	fflush(stderr);
+	//fflush(stderr);
 	sense_reversing_barrier_MPI(&my_id, &num_processes, &sense);
-	fflush(stderr);
+	//fflush(stderr);
   	fprintf(stderr, "After barrier 2 : Process %d of %d\n", my_id+1, num_processes);
-	fflush(stderr);
-
+	//fflush(stderr);
 
   	MPI_Finalize();
   	return 0;

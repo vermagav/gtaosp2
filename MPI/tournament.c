@@ -33,7 +33,6 @@ void barrier_init(int num_procs) {
 		printf("Error: Invalid number of processes.\n");
 		exit(0);
 	}
-
 	// Determine nearest power of 2 >= num_procs
 	int power = 1;
 	while(pow(2, power) <= num_procs) {
@@ -74,11 +73,12 @@ void barrier_init(int num_procs) {
 void barrier(int rank) {
 
 	int iter, message = 1;
+	for (iter =0; iter<20000;iter++);
 	bool done = false;
 	// Loop through the messages array to send/receive messages
 	for (iter = 0; iter < num_messages; iter++) {
 		if (messages[iter][0] == rank) {
-			MPI_Recv(&message, DUMMY_SIZE, MPI_INT, messages[iter][1], DUMMY_TAG , MPI_COMM_WORLD, NULL);
+			MPI_Recv(&message, DUMMY_SIZE, MPI_INT, messages[iter][1], DUMMY_TAG , MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 		else if (messages[iter][1] == rank) {
 			MPI_Send(&message, DUMMY_SIZE, MPI_INT, messages[iter][0], DUMMY_TAG , MPI_COMM_WORLD);
@@ -89,43 +89,37 @@ void barrier(int rank) {
 	// Once process 0 wins the tourney, it tells everyone that it won.
 	if (rank == 0) {
 		done = true;
-		if (num_messages != 0) {
-			MPI_Bcast(&done, DUMMY_SIZE, MPI_INT, rank, MPI_COMM_WORLD);
-		}
 	}
-
+	MPI_Bcast(&done, DUMMY_SIZE, MPI_INT, rank, MPI_COMM_WORLD);
 	// Spin on local variable done
 	while(!done);
+	for (iter =0; iter<20000;iter++);
 }
 
 int main(int argc, char **argv) {
 
 	int my_id, num_processes;
+
 	MPI_Init(&argc, &argv);
 
   	MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
+  	barrier_init(num_processes);
   	MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
 
-	barrier_init(num_processes);
+	
 
   	fprintf(stderr, "Before barrier 1 : Process %d of %d\n", my_id+1, num_processes);
-	fflush(stderr);
-
-	// Barrier
-	barrier(my_id);
-
-	fflush(stderr);
-  	fprintf(stderr, "Before Barrier 2 : Process %d of %d\n", my_id+1, num_processes);
-	fflush(stderr);
 	
 	// Barrier
 	barrier(my_id);
+
+	fprintf(stderr, "Before Barrier 2 : Process %d of %d\n", my_id+1, num_processes);
 	
-	fflush(stderr);
-  	fprintf(stderr, "After barrier 2 : Process %d of %d\n", my_id+1, num_processes);
-	fflush(stderr);
+	// Barrier
+	barrier(my_id);
 
-
+	fprintf(stderr, "After barrier 2 : Process %d of %d\n", my_id+1, num_processes);
+	
   	MPI_Finalize();
   	return 0;
 }
