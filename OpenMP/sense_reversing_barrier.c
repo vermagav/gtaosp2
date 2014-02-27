@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <omp.h>
-
-int NUM_THREADS, NUM_BARRIERS;
+#include "sense_reversing_barrier.h"
 
 static void sense_reversing_barrier_OpenMP (int *count, int *sense){
 	
@@ -24,4 +20,9 @@ static void sense_reversing_barrier_OpenMP (int *count, int *sense){
 		// Spin on sense reversal
        	while( *sense == local_sense );
 	}
+}
+
+static void sense_reversing_barrier_OpenMP (int count, int barriers) {
+	NUM_THREADS = count;
+	NUM_BARRIERS = barriers;
 }
