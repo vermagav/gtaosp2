@@ -28,3 +28,28 @@ void sense_reversing_barrier_MPI(int *rank, int *numprocs, int *sense){
 	// Spin on sense reversal for all processes
 	while (local_sense == *sense);
 }
+
+int main(int argc, char **argv)
+{
+	int my_id, num_processes;
+	int sense = 1;
+	MPI_Init(&argc, &argv);
+
+  	MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
+  	MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
+  	
+  	fprintf(stderr, "0-Hello World from processes %d of %d\n", my_id, num_processes);
+	fflush(stderr);
+	sense_reversing_barrier_MPI(&my_id, &num_processes, &sense);
+	fflush(stderr);
+  	fprintf(stderr, "0-Goodbye World from processes %d of %d\n", my_id, num_processes);
+	fflush(stderr);
+	sense_reversing_barrier_MPI(&my_id, &num_processes, &sense);
+	fflush(stderr);
+  	fprintf(stderr, "1-Hello World from processes %d of %d\n", my_id, num_processes);
+	fflush(stderr);
+
+
+  	MPI_Finalize();
+  	return 0;
+}
