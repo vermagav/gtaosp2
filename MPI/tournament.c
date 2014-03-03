@@ -106,19 +106,20 @@ int main(int argc, char **argv) {
   	barrier_init(num_processes);
   	MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
 
-	
-
   	fprintf(stderr, "Before barrier 1 : Process %d of %d\n", my_id+1, num_processes);
-	
+	//double time1 = MPI_Wtime();
+
 	// Barrier
 	barrier(my_id);
 
 	fprintf(stderr, "Before Barrier 2 : Process %d of %d\n", my_id+1, num_processes);
+	//double time2 = MPI_Wtime();
 	
 	// Barrier
 	barrier(my_id);
 
 	fprintf(stderr, "After barrier 2 : Process %d of %d\n", my_id+1, num_processes);
+	//double time3 = MPI_Wtime();
 	
   	MPI_Finalize();
   	return 0;

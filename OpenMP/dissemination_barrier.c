@@ -71,7 +71,7 @@ int main (int argc, char **argv)
 		int num_threads = omp_get_num_threads();
 		int thread_num = omp_get_thread_num();
 		int j;
-		double total_time;
+		double total_time = 0;
 		double time1, time2;
 
 		for(j=0; j<num_barrier; j++){

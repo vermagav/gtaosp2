@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
 	fprintf(stderr, "After MPI Barrier  : Process %d of %d\n", rank+1, numprocs);
 	
 	//OpenMP PART
-	double time1, time2,total_time = 0;
+	double time1, time2, total_time = 0;
 	omp_set_num_threads(NUM_THREADS_PER_PROC);
 	int num_barriers = NUM_BARRIER;
 

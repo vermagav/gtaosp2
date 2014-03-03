@@ -17,13 +17,13 @@ void sense_reversing_barrier_OpenMP (int *count, int *sense){
 
 	// If last thread, then flip local sense
 	if( *count == 0 ){
-        *count = NUM_THREADS;
-        // Flip the sense variable on the shared memory
-        *sense = !local_sense;
+		*count = NUM_THREADS;
+		// Flip the sense variable on the shared memory
+		*sense = !local_sense;
 	}
 	else {
 		// Spin on sense reversal
-       	while( *sense == local_sense );
+		while( *sense == local_sense );
 	}
 }
 
@@ -35,7 +35,7 @@ void sense_reversing_barrier_OpenMP_init (int count, int barriers) {
 int main (int argc, char **argv)
 {
 	int threads, num_barrier;
-	if( argc == 3 ){
+	if( argc == 3 ) {
 	  threads = atoi( argv[1] );
 	  num_barrier = atoi( argv[2] );
 	  sense_reversing_barrier_OpenMP_init(threads, num_barrier);
@@ -47,7 +47,7 @@ int main (int argc, char **argv)
 	}
 
 	// Serial code
-	printf("This is the serial section\n");
+	printf("Welcome to the serial code section...\n");
 	omp_set_num_threads( threads );
 	int sense = 1, count = threads;
 
@@ -58,11 +58,11 @@ int main (int argc, char **argv)
 		int num_threads = omp_get_num_threads();
 		int thread_num = omp_get_thread_num();
 		long j;
-		double total_time;
+		double total_time = 0;
 		double time1, time2;
 
-		for(j=0; j<NUM_BARRIERS; j++){
-			printf("Hello World from thread %d of %d.\n", thread_num, num_threads);
+		for( j=0; j<NUM_BARRIERS; j++ ) {
+			printf("START POINT, thread %d of %d\n", thread_num, num_threads);
 
 			time1 = omp_get_wtime();
 			
@@ -73,12 +73,12 @@ int main (int argc, char **argv)
 
 			total_time += time2 - time1;
 			
-			printf("Bye-Bye World from thread %d of %d.\n", thread_num, num_threads);
+			printf("END POINT, thread %d of %d\n", thread_num, num_threads);
 		}
 
-		printf("Time spent in barrier(s) by thread %d is %f\n", thread_num, total_time);
+		printf("Time spent by thread %d: %f\n", thread_num, total_time);
 	}
 
-	printf("Back in the serial section again\n");
+	printf("End of execution and back to serial code section...\n");
 	return 0;
 }
